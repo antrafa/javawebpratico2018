@@ -27,8 +27,10 @@ var txfPoster = document.getElementById("txfPoster");
 var txfReleasedDate = document.getElementById("txfReleasedDate");
 
 var movies = [];
+var marvel = [ironman, thor, captainAmerica];
 
 var init = function(){
+  localStorage.removeItem("movies");
   addEventListeners();
   loadMovies();
 }
@@ -36,9 +38,8 @@ var init = function(){
 var loadMovies = () => {
   tableBody.innerHTML = "";
   movies = localStorage.getItem("movies");
-  debugger;
-  var marvel = [ironman, thor, captainAmerica];
-  movies = movies ? movies: marvel;
+  movies = JSON.parse(movies);
+  movies = movies ? movies : marvel;
   movies.forEach((m) => printMovies(m));
 }
 
@@ -48,7 +49,7 @@ var printMovies = function(movie){
       "<td>"+movie.releasedDate+"</td>"+
       "<td>"+movie.budget+"</td>"+
       "<td><img src=\""+movie.poster+"\" width=\"80\" /></td>"+
-      "<td> Actions </td>"+
+      "<td></td>"+
     "</tr>";
     tableBody.innerHTML += row;
 }
@@ -64,9 +65,21 @@ var getAndSaveMovie = function(e){
 }
 
 var saveMovie = function(movie){
-  printMovies(movie);
   movies.push(movie);
-  localStorage.setItem("movies", JSON.stringify(movies));
+  printMovies(movie);
+  commitMovies();
+}
+
+var deleteMovie = function(movie){
+    var i = movies.findIndex(movie);
+    console.log(i);
+    // delete movie[i];
+    printMovies(movie);
+    commitMovies();
+}
+
+var commitMovies = function(){
+    localStorage.setItem("movies", JSON.stringify(movies));
 }
 
 var addEventListeners = () => {
