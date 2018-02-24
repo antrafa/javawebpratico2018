@@ -21,10 +21,11 @@ var addEventListeners = () => {
 };
 
 var getMovies = () => {
-  tableBody.innerHTML = "";
+  tableBody.innerHTML = "<tr><td style=\"text-align:center;\" colspan=6><img src=\"img/loading.gif\" width=\"25\" /></td></tr>";
   ajaxExec("GET",endPoint,"",function(e) {
+      tableBody.innerHTML = "";
       console.log(e.target.status);
-      movies = JSON.parse(response);
+      movies = JSON.parse(e.target.responseText);
       movies.forEach((m, i) => printMovies(m, i));
   });
 };
@@ -36,10 +37,10 @@ var printMovies = (movie, index) => {
   "<td>"+movie.title+"</td>"+
   "<td>"+movie.releasedDate+"</td>"+
   "<td>"+movie.budget+"</td>"+
-  "<td><img src=\""+movie.poster+"\" width=\"80\" /></td>"+
-  "<td>"+
-  "<input type=\"button\" onclick=\"deleteMovie("+index+")\" value=\"Delete\" />"+
-  "<input type=\"button\" onclick=\"editMovie("+index+")\" value=\"Edit\" />"+
+  "<td style=\"text-align:center;\"><img src=\""+movie.poster+"\" width=\"80\" /></td>"+
+  "<td style=\"text-align:center;\">"+
+    "<input type=\"button\" onclick=\"deleteMovie("+index+")\" value=\"Delete\" /><br />"+
+    "<input type=\"button\" onclick=\"editMovie("+index+")\" value=\"Edit\" />"+
   "</td>"+
   "</tr>";
   tableBody.innerHTML += row;
