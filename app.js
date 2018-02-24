@@ -25,12 +25,12 @@ var txfTitle = document.getElementById("txfTitle");
 var txfBudget = document.getElementById("txfBudget");
 var txfPoster = document.getElementById("txfPoster");
 var txfReleasedDate = document.getElementById("txfReleasedDate");
+var txfId = document.getElementById("txfId");
 
 var movies = [];
-var marvel = [ironman, thor, captainAmerica];
 
-var init = function(){
-  localStorage.removeItem("movies");
+var init = () => {
+  //localStorage.removeItem("movies");
   addEventListeners();
   loadMovies();
 }
@@ -39,51 +39,66 @@ var loadMovies = () => {
   tableBody.innerHTML = "";
   movies = localStorage.getItem("movies");
   movies = JSON.parse(movies);
+  var marvel = [ironman, thor, captainAmerica];
   movies = movies ? movies : marvel;
-  movies.forEach((m) => printMovies(m));
-}
-
-var printMovies = function(movie){
-    var row = "<tr>"+
-      "<td>"+movie.title+"</td>"+
-      "<td>"+movie.releasedDate+"</td>"+
-      "<td>"+movie.budget+"</td>"+
-      "<td><img src=\""+movie.poster+"\" width=\"80\" /></td>"+
-      "<td></td>"+
-    "</tr>";
-    tableBody.innerHTML += row;
-}
-
-var getAndSaveMovie = function(e){
-  if (e) e.preventDefault();
-  var movie = {};
-  movie.title = txfTitle.value;
-  movie.releasedDate = txfReleasedDate.value;
-  movie.budget = txfBudget.value;
-  movie.poster = txfPoster.value;
-  saveMovie(movie);
-}
-
-var saveMovie = function(movie){
-  movies.push(movie);
-  printMovies(movie);
-  commitMovies();
-}
-
-var deleteMovie = function(movie){
-    var i = movies.findIndex(movie);
-    console.log(i);
-    // delete movie[i];
-    printMovies(movie);
-    commitMovies();
-}
-
-var commitMovies = function(){
-    localStorage.setItem("movies", JSON.stringify(movies));
+  movies.forEach((m, i) => printMovies(m, i));
 }
 
 var addEventListeners = () => {
   btnSave.addEventListener("click", getAndSaveMovie);
+}
+
+var printMovies = (movie, index) => {
+  if (!movie) return;
+  var row = "<tr>"+
+  "<td>"+index+"</td>"+
+  "<td>"+movie.title+"</td>"+
+  "<td>"+movie.releasedDate+"</td>"+
+  "<td>"+movie.budget+"</td>"+
+  "<td><img src=\""+movie.poster+"\" width=\"80\" /></td>"+
+  "<td>"+
+  "<input type=\"button\" onclick=\"deleteMovie("+index+")\" value=\"Delete\" />"+
+  "<input type=\"button\" onclick=\"editMovie("+index+")\" value=\"Edit\" />"+
+  "</td>"+
+  "</tr>";
+  tableBody.innerHTML += row;
+}
+
+var getAndSaveMovie = (e) => {
+  if(e) e.preventDefault();
+  var title = txfTitle.value;
+  var poster = txfPoster.value;
+  var releasedDate = txfReleasedDate.value;
+  var budget = txfBudget.value;
+  var id = txfId.value;
+  var isNew = id == "-1";
+  id = isNew? movies.length: id;
+  var movie = {id: id, title: title, "poster": poster, releasedDate: releasedDate, "budget": budget};
+  if (isNew) movies.push(movie);
+  else movies[id] = movie;
+  commitMovies();
+  loadMovies();
+}
+
+var deleteMovie = (index) => {
+  console.log("removendo filme "+movies[index].title);
+  delete movies[index];
+  commitMovies();
+  loadMovies();
+};
+
+var editMovie = (index) => {
+  console.log("editando filme "+movies[index].title);
+  var movie = movies[index];
+  txfTitle.value = movie.title;
+  txfPoster.value = movie.poster;
+  txfReleasedDate.value = movie.releasedDate;
+  txfBudget.value = movie.budget;
+  txfId.value = index;
+};
+
+var commitMovies = () => {
+  localStorage.setItem("movies", JSON.stringify(movies));
 }
 
 window.onload = init();
