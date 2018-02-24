@@ -26,17 +26,31 @@ var txfBudget = document.getElementById("txfBudget");
 var txfPoster = document.getElementById("txfPoster");
 var txfReleasedDate = document.getElementById("txfReleasedDate");
 
-var movies = [ironman,thor,captainAmerica];
+var movies = [];
+
+var init = function(){
+  addEventListeners();
+  loadMovies();
+}
+
+var loadMovies = () => {
+  tableBody.innerHTML = "";
+  movies = localStorage.getItem("movies");
+  debugger;
+  var marvel = [ironman, thor, captainAmerica];
+  movies = movies ? movies: marvel;
+  movies.forEach((m) => printMovies(m));
+}
 
 var printMovies = function(movie){
-    var tmp = "<tr>"+
+    var row = "<tr>"+
       "<td>"+movie.title+"</td>"+
       "<td>"+movie.releasedDate+"</td>"+
       "<td>"+movie.budget+"</td>"+
       "<td><img src=\""+movie.poster+"\" width=\"80\" /></td>"+
       "<td> Actions </td>"+
     "</tr>";
-    tableBody.innerHTML += tmp;
+    tableBody.innerHTML += row;
 }
 
 var getAndSaveMovie = function(e){
@@ -52,9 +66,11 @@ var getAndSaveMovie = function(e){
 var saveMovie = function(movie){
   printMovies(movie);
   movies.push(movie);
+  localStorage.setItem("movies", JSON.stringify(movies));
 }
 
-window.onload = function(){
+var addEventListeners = () => {
   btnSave.addEventListener("click", getAndSaveMovie);
-  movies.forEach((m) => printMovies(m));
 }
+
+window.onload = init();
